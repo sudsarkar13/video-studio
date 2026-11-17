@@ -19,7 +19,7 @@ Everything is open source or generated: Kokoro-82M (Apache-2.0) voices, music an
 
 ## 1. Check the install
 
-Run `node $S/doctor.mjs`. If it is not ready, run the installer for the OS (`install/install.sh` on macOS/Linux, `install/install.ps1` on Windows) and run the doctor again. The installer only touches the skill folder and the data folder. Ask the person before installing anything system-wide (ffmpeg, a browser, Node, Python); the doctor prints the exact command for their OS.
+Run `node $S/doctor.mjs`. If it is not ready, run the installer, `node <skill folder>/install/install.mjs` (the same command on macOS, Linux and Windows; the doctor prints the exact path), then run the doctor again. The installer only writes to the data folder, never to the skill folder. Ask the person before installing anything system-wide (ffmpeg, a browser, Node, Python); the doctor prints the exact command for their OS.
 
 ## 2. Intake: what video do they want?
 

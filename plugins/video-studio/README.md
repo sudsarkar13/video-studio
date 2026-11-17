@@ -59,12 +59,14 @@ Then ask Claude for a video. The first time, it runs the installer, which sets u
    - Windows: `%USERPROFILE%\.claude\skills\`
 
    You should end up with `.claude/skills/video-studio/SKILL.md`.
-2. Run the installer once:
-   - macOS / Linux: `bash ~/.claude/skills/video-studio/install/install.sh`
-   - Windows: `powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\.claude\skills\video-studio\install\install.ps1"`
-3. Check it: `node ~/.claude/skills/video-studio/scripts/doctor.mjs`
+2. Run the installer once (the same command on every OS):
+   - macOS / Linux: `node ~/.claude/skills/video-studio/install/install.mjs`
+   - Windows: `node "%USERPROFILE%\.claude\skills\video-studio\install\install.mjs"`
+3. Check it: `node ~/.claude/skills/video-studio/install/install.mjs --check`
 
-The installer changes only the skill folder and a data folder (`~/.local/share/video-studio`, or `%LOCALAPPDATA%\video-studio` on Windows). It never installs system software for you; if ffmpeg or a browser is missing, the doctor prints the command for your OS.
+Plugin users run the same installer; Claude offers to run it the first time you use the skill.
+
+The installer writes only to a data folder (`~/.local/share/video-studio`, or `%LOCALAPPDATA%\video-studio` on Windows). It never installs system software for you; if ffmpeg or a browser is missing, the doctor prints the command for your OS.
 
 ## Example prompts
 
@@ -80,10 +82,10 @@ The installer changes only the skill folder and a data folder (`~/.local/share/v
 - Node and Python scripts in this plugin.
 - A Chromium-based browser (Chrome, Edge or Playwright's Chromium) driven by playwright-core, with its own profile in the data folder, separate from your normal browser.
 - ffmpeg.
-- The installers (`install/install.sh`, `install/install.ps1`). They create a Python environment in the data folder and run `npm install` in the plugin folder.
+- The installer, `install/install.mjs` (one Node script for macOS, Linux and Windows). It installs playwright-core with npm, creates a Python environment, and downloads the voice model, all inside the data folder. The plugin folder itself has no dependencies and is never written to.
 
 **Fetches over the network:**
-- **At install:** npm and PyPI packages pinned in the installer; the Kokoro voice model (two files) from the kokoro-onnx GitHub release, checked against fixed SHA-256 checksums.
+- **At install:** playwright-core 1.60.0 from npm and three Python packages from PyPI, all pinned in the installer; the Kokoro voice model (two files) from the kokoro-onnx GitHub release, checked against fixed SHA-256 checksums.
 - **Only if needed:** Playwright's Chromium, if neither Chrome nor Edge is installed.
 - **During recording:** only the URLs written in your storyboard.
 

@@ -6,8 +6,8 @@
 // (2) render every output frame in compositor.html with headless Chromium, piped into ffmpeg,
 // (3) mix narration, the voice agent's own replies, the inventor's mic clips and optional music
 // (ducked under speech), (4) write an .srt of the narration beside the video.
-import { chromium } from "playwright-core";
-import { FFMPEG, PY as DEFAULT_PY, browser as pickBrowser } from "./lib/paths.mjs";
+import { FFMPEG, PY as DEFAULT_PY, browser as pickBrowser, loadPlaywright } from "./lib/paths.mjs";
+const { chromium } = loadPlaywright();
 import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";

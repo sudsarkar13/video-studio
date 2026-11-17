@@ -2,15 +2,10 @@
 // is not. Exit code 0 when the core is ready.   node doctor.mjs [--json]
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
-import { createRequire } from "node:module";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { FFMPEG, HOME_DIR, MODELS, PY, browser } from "./lib/paths.mjs";
+import { FFMPEG, HOME_DIR, INSTALL_CMD as INSTALL, MODELS, NODE_DIR, PY, browser, loadPlaywright } from "./lib/paths.mjs";
 
-const HERE = path.dirname(fileURLToPath(import.meta.url));
-const SKILL = path.dirname(HERE);
 const OS = process.platform === "win32" ? "windows" : process.platform === "darwin" ? "macos" : "linux";
-const INSTALL = OS === "windows" ? `powershell -ExecutionPolicy Bypass -File "${path.join(SKILL, "install", "install.ps1")}"` : `bash "${path.join(SKILL, "install", "install.sh")}"`;
 const run = (cmd, args) => spawnSync(cmd, args, { encoding: "utf8", timeout: 20000 });
 const checks = [];
 const add = (name, ok, detail, fix, optional = false) => checks.push({ name, ok, detail, fix: ok ? "" : fix, optional });
@@ -22,8 +17,9 @@ add("Node.js 18+", nodeMajor >= 18, `v${process.versions.node}`, "Install Node.j
 // playwright-core
 let pw = null;
 try {
-	pw = createRequire(path.join(SKILL, "package.json"))("playwright-core");
-	add("playwright-core", true, "installed in the skill folder", "");
+	pw = loadPlaywright();
+	const inData = fs.existsSync(path.join(NODE_DIR, "node_modules", "playwright-core", "package.json"));
+	add("playwright-core", inData, inData ? `installed in ${NODE_DIR}` : "found outside the data folder (development copy)", `Run the installer: ${INSTALL}`);
 } catch {
 	add("playwright-core", false, "not installed", `Run the installer: ${INSTALL}`);
 }
@@ -35,7 +31,7 @@ if (b.name === "bundled Chromium") {
 	try {
 		ok = !!pw && fs.existsSync(pw.chromium.executablePath());
 	} catch {}
-	add("Browser", ok, ok ? "Playwright's bundled Chromium" : "no Google Chrome, Microsoft Edge or bundled Chromium", `Install Google Chrome, or run: node "${path.join(SKILL, "node_modules", "playwright-core", "cli.js")}" install chromium`);
+	add("Browser", ok, ok ? "Playwright's bundled Chromium" : "no Google Chrome, Microsoft Edge or bundled Chromium", `Install Google Chrome, or run: node "${path.join(NODE_DIR, "node_modules", "playwright-core", "cli.js")}" install chromium`);
 } else add("Browser", true, b.name, "");
 
 // ffmpeg and the pieces of it the skill uses

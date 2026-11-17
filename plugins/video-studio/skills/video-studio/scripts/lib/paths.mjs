@@ -1,12 +1,14 @@
 // Where Video Studio keeps its data and which tools it uses, on macOS, Linux and Windows.
 // Everything can be overridden with environment variables:
-//   VIDEO_STUDIO_HOME     data folder (voice model, Python environment, recorder browser profile)
+//   VIDEO_STUDIO_HOME     data folder (voice model, Python environment, browser library, recorder profile)
 //   VIDEO_STUDIO_PY       Python interpreter with kokoro-onnx, soundfile and numpy installed
 //   VIDEO_STUDIO_BROWSER  chrome | msedge | bundled | an absolute path to a Chromium-based browser
 //   VIDEO_STUDIO_FFMPEG   ffmpeg executable (default: "ffmpeg" on the PATH)
 import fs from "node:fs";
+import { createRequire } from "node:module";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const WIN = process.platform === "win32";
 const MAC = process.platform === "darwin";
@@ -19,6 +21,20 @@ export const PY = process.env.VIDEO_STUDIO_PY || (WIN ? path.join(HOME_DIR, ".ve
 export const PROFILE = path.join(HOME_DIR, "browser-profile");
 export const MODELS = path.join(HOME_DIR, "models");
 export const FFMPEG = process.env.VIDEO_STUDIO_FFMPEG || "ffmpeg";
+// playwright-core lives in the data folder (installed by install/install.mjs), not in the plugin.
+export const NODE_DIR = path.join(HOME_DIR, "node");
+export const SKILL_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
+export const INSTALL_CMD = `node "${path.join(SKILL_DIR, "install", "install.mjs")}"`;
+
+/** Load playwright-core from the data folder; fall back to normal resolution (for development). */
+export const loadPlaywright = () => {
+	for (const base of [path.join(NODE_DIR, "package.json"), import.meta.url]) {
+		try {
+			return createRequire(base)("playwright-core");
+		} catch {}
+	}
+	throw new Error(`playwright-core is not installed. Run the installer: ${INSTALL_CMD}`);
+};
 
 const exists = (p) => {
 	try {
@@ -51,7 +67,7 @@ export const browser = () => {
 	if (want && want !== "chrome" && want !== "msedge" && want !== "bundled") return { name: want, launch: { executablePath: want } };
 	if (want === "bundled") return { name: "bundled Chromium", launch: {} };
 	for (const ch of want ? [want] : ["chrome", "msedge"]) if (CANDIDATES[ch].some(exists)) return { name: ch === "chrome" ? "Google Chrome" : "Microsoft Edge", launch: { channel: ch } };
-	return { name: "bundled Chromium", launch: {} }; // needs: node node_modules/playwright-core/cli.js install chromium (the installer does this)
+	return { name: "bundled Chromium", launch: {} }; // the installer downloads it when no Chrome or Edge is found
 };
 
 export const browserCandidates = CANDIDATES;

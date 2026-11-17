@@ -4,7 +4,7 @@
 
 The zip unpacks to a single `video-studio/` folder (the skill) that people drop into their Claude
 skills folder; README.md, THIRD_PARTY.md and LICENSE (if present) go inside it. node_modules,
-caches and OS litter are left out; the installer fetches dependencies on the user's machine.
+caches and OS litter are left out; install/install.mjs fetches dependencies into the data folder.
 """
 
 import json
@@ -16,7 +16,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PLUGIN = os.path.join(ROOT, "plugins", "video-studio")
 SKILL = os.path.join(PLUGIN, "skills", "video-studio")
 SKIP_DIRS = {"node_modules", "__pycache__", ".git"}
-SKIP_FILES = {".DS_Store", "package-lock.json"}
+SKIP_FILES = {".DS_Store"}
 
 
 def main() -> None:
@@ -34,11 +34,7 @@ def main() -> None:
                     continue
                 path = os.path.join(base, name)
                 arc = os.path.join("video-studio", os.path.relpath(path, SKILL))
-                info = zipfile.ZipInfo.from_file(path, arc)
-                if name.endswith(".sh"):
-                    info.external_attr = 0o100755 << 16  # keep the installer executable
-                with open(path, "rb") as fh:
-                    z.writestr(info, fh.read(), zipfile.ZIP_DEFLATED)
+                z.write(path, arc)
                 count += 1
         for extra in ("README.md", "THIRD_PARTY.md", "LICENSE"):
             p = os.path.join(PLUGIN, extra)

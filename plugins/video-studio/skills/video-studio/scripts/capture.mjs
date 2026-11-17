@@ -11,8 +11,8 @@
 //
 // Video: Chrome DevTools screencast (JPEG frames at the device scale), not Playwright's recordVideo,
 // which is a fixed low-bitrate VP8 too soft for zooms. Audio: see audio-hooks.js.
-import { chromium } from "playwright-core";
-import { PROFILE, browser } from "./lib/paths.mjs";
+import { PROFILE, browser, loadPlaywright } from "./lib/paths.mjs";
+const { chromium } = loadPlaywright();
 const BROWSER = browser();
 import fs from "node:fs";
 import path from "node:path";
