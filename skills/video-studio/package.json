@@ -1,0 +1,9 @@
+{
+  "name": "video-studio-runtime",
+  "private": true,
+  "type": "module",
+  "description": "Runtime for the Video Studio skill: drives a Chromium-based browser to record apps and render videos.",
+  "dependencies": {
+    "playwright-core": "1.60.0"
+  }
+}

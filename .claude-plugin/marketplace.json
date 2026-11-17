@@ -1,0 +1,11 @@
+{
+  "name": "video-studio",
+  "owner": { "name": "Sudeepta Sarkar", "url": "https://sudeeptasarkar.in" },
+  "plugins": [
+    {
+      "name": "video-studio",
+      "source": "./",
+      "description": "Automatic product demos, blog-to-video, shorts/reels, launches, tutorials and slideshows with open-source voices and generated music."
+    }
+  ]
+}

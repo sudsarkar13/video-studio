@@ -1,0 +1,22 @@
+{
+  "name": "video-studio",
+  "version": "0.1.0",
+  "description": "Make product demos, blog-to-video, shorts/reels, feature launches, tutorials and slideshows automatically, with open-source voices, generated music and captions. Desktop 16:9 and full-screen iPhone 9:16.",
+  "author": {
+    "name": "Sudeepta Sarkar",
+    "url": "https://sudeeptasarkar.in"
+  },
+  "homepage": "https://sudeeptasarkar.in",
+  "keywords": [
+    "video",
+    "demo",
+    "screen recording",
+    "reels",
+    "shorts",
+    "tts",
+    "kokoro",
+    "playwright",
+    "ffmpeg"
+  ],
+  "license": "MIT"
+}

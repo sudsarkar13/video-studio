@@ -1,0 +1,292 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+	/* Brand colours come from storyboard.brand via setBrand(); these are only the fallbacks. */
+	:root { --navy: #0b1f3f; --navy-2: #13315f; --gold: #d4a63a; --ink: #0b1f3f; }
+	html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--navy); font-family: Inter, "Helvetica Neue", Arial, sans-serif; }
+	#bg { position: absolute; inset: 0; background: radial-gradient(1200px 700px at 78% 18%, rgba(212,166,58,.28), transparent 60%), radial-gradient(900px 600px at 10% 90%, rgba(80,130,220,.25), transparent 60%), linear-gradient(160deg, var(--navy-2), var(--navy)); }
+	#stage { position: absolute; inset: 0; perspective: 2400px; perspective-origin: 50% 40%; }
+	#card { position: absolute; left: 50%; top: 50%; width: 1680px; height: 981px; margin: -490px 0 0 -840px; border-radius: 18px; overflow: hidden; background: #fff; transform-style: preserve-3d; box-shadow: 0 60px 120px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.08); will-change: transform; }
+	#bar { height: 36px; background: #eef1f6; display: flex; align-items: center; gap: 8px; padding: 0 16px; border-bottom: 1px solid #dde2ea; }
+	#bar i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+	#url { margin-left: 18px; flex: 0 1 520px; height: 22px; border-radius: 11px; background: #fff; color: #5b6475; font-size: 13px; line-height: 22px; padding: 0 12px; }
+	#view { position: relative; width: 1680px; height: 945px; overflow: hidden; }
+	#inner { position: absolute; inset: 0; will-change: transform; }
+	#shot { width: 1680px; height: 945px; display: block; }
+	#cursor { position: absolute; width: 30px; height: 30px; margin: -3px 0 0 -5px; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,.35)); }
+	#ripple { position: absolute; width: 60px; height: 60px; margin: -30px 0 0 -30px; border-radius: 50%; border: 3px solid var(--gold); opacity: 0; }
+	#caption { position: absolute; left: 50%; bottom: 44px; transform: translateX(-50%); max-width: 1360px; padding: 18px 30px 20px; border-radius: 16px; background: rgba(8,22,46,.86); box-shadow: 0 18px 50px rgba(0,0,0,.45), 0 0 0 1px rgba(212,166,58,.35); backdrop-filter: blur(8px); color: #fff; font-size: 31px; font-weight: 650; line-height: 1.3; text-align: center; opacity: 0; }
+	#caption small { display: block; font-size: 17px; font-weight: 700; color: var(--gold); letter-spacing: 1.6px; text-transform: uppercase; margin-bottom: 6px; }
+	#caption:empty { display: none; }
+	#end { position: absolute; inset: 0; z-index: 8; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(160deg, var(--navy-2), var(--navy)); color: #fff; opacity: 0; }
+	#end .plate { width: 188px; height: 188px; border-radius: 44px; background: #fff; display: flex; align-items: center; justify-content: center; margin-bottom: 34px; box-shadow: 0 30px 80px rgba(0,0,0,.45), 0 0 0 6px rgba(255,255,255,.08), 0 0 120px rgba(212,166,58,.25); }
+	#end .plate img { width: 150px; height: 150px; object-fit: contain; }
+	#end .plate:empty, #end .plate.none { display: none; }
+	#end h1 { margin: 0; font-size: 96px; font-weight: 800; letter-spacing: -2px; }
+	#end h1 b { color: var(--gold); font-weight: 800; }
+	#end p { margin: 18px 0 0; font-size: 34px; color: rgba(255,255,255,.8); }
+	#fade { position: absolute; inset: 0; background: var(--navy); opacity: 0; }
+	#top, #sub { display: none; }
+
+	/* Vertical (9:16) layout for phones: chapter label on top, a tall app frame that pans across the
+	   wide recording to follow the action, burned-in captions below (phones autoplay muted). */
+	body.vertical, html.vertical { width: 1080px; height: 1920px; }
+	.vertical #stage { perspective: 2000px; perspective-origin: 50% 45%; }
+	.vertical #card { left: 40px; top: 400px; width: 1000px; height: 1120px; margin: 0; border-radius: 28px; }
+	.vertical #bar { height: 36px; }
+	.vertical #url { flex-basis: 420px; }
+	.vertical #view { width: 1000px; height: 1084px; }
+	.vertical #inner { right: auto; bottom: auto; }
+	.vertical #cursor { width: 38px; height: 38px; }
+	.vertical #ripple { width: 76px; height: 76px; margin: -38px 0 0 -38px; }
+	.vertical #top { display: flex; position: absolute; left: 60px; right: 60px; top: 110px; height: 250px; flex-direction: column; justify-content: flex-start; color: #fff; }
+	.vertical #top .brand { display: flex; align-items: center; gap: 16px; font-size: 30px; font-weight: 750; letter-spacing: -.3px; opacity: .95; }
+	.vertical #top .brand .mini { width: 58px; height: 58px; border-radius: 15px; background: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+	.vertical #top .brand .mini img { width: 46px; height: 46px; object-fit: contain; }
+	.vertical #top .brand .mini.none { display: none; }
+	.vertical #top .brand b { color: var(--gold); font-weight: 750; }
+	.vertical #top .kicker { margin-top: 34px; font-size: 26px; font-weight: 750; letter-spacing: 2.4px; text-transform: uppercase; color: var(--gold); min-height: 32px; }
+	.vertical #top .label { margin-top: 8px; font-size: 58px; line-height: 1.08; font-weight: 800; letter-spacing: -1.2px; }
+	.vertical #caption { display: none; }
+	.vertical #sub { display: block; position: absolute; left: 60px; right: 60px; top: 1570px; min-height: 160px; padding: 26px 34px; border-radius: 26px; background: rgba(8,22,46,.82); box-shadow: 0 0 0 1px rgba(212,166,58,.3), 0 20px 50px rgba(0,0,0,.4); color: #fff; font-size: 40px; font-weight: 650; line-height: 1.32; text-align: center; opacity: 0; }
+	.vertical #sub small { display: block; font-size: 22px; letter-spacing: 1.8px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; font-weight: 750; }
+	.vertical #end h1 { font-size: 92px; }
+
+	/* Phone: a mobile recording inside a phone body, centred between the chapter title and the captions. */
+	.phone #card { left: 152px; top: 318px; width: 776px; height: 1344px; padding: 22px; box-sizing: border-box; border-radius: 74px; background: linear-gradient(145deg, #1b1d24, #0b0c10); box-shadow: 0 50px 110px rgba(0,0,0,.55), inset 0 0 0 2px rgba(255,255,255,.08), 0 0 0 1px rgba(0,0,0,.6); }
+	.phone #bar { display: none; }
+	.phone #view { width: 732px; height: 1300px; border-radius: 54px; background: #fff; }
+	.phone #view::after { content: ""; position: absolute; top: 14px; left: 50%; width: 22px; height: 22px; margin-left: -11px; border-radius: 50%; background: #07080b; box-shadow: 0 0 0 3px rgba(255,255,255,.05); }
+	.phone #top { top: 92px; }
+	.phone #top .kicker { margin-top: 26px; }
+	.phone #top .label { font-size: 52px; }
+	.phone #sub { top: 1696px; min-height: 140px; padding: 22px 30px; font-size: 38px; }
+	.phone #ripple { width: 90px; height: 90px; margin: -45px 0 0 -45px; border-width: 5px; }
+
+	/* iPhone, full screen: the video IS the phone screen (1080 x 1920 = 393 x 699 pt at 2.748x). iOS status
+	   bar with Dynamic Island on top, the app, Safari's minimised bottom bar with the home indicator.
+	   No phone body, background, titles or captions: only the product. */
+	html.iphone, body.iphone { width: 1080px; height: 1920px; background: #000; }
+	.iphone #bg { display: none; }
+	.iphone #stage { perspective: none; }
+	.iphone #card { left: 0; top: 0; width: 1080px; height: 1920px; margin: 0; padding: 0; border-radius: 0; box-shadow: none; background: #fff; transform: none !important; }
+	.iphone #bar { display: none; }
+	.iphone #view { width: 1080px; height: 1920px; border-radius: 0; background: #fff; position: relative; overflow: hidden; }
+	.iphone #inner { top: 148px; left: 0; right: auto; bottom: auto; }
+	.iphone #status, .iphone #safari, .iphone #island, .iphone #screenfade { display: block; }
+	#status, #safari, #island, #screenfade { display: none; }
+	#status { position: absolute; left: 0; top: 0; width: 1080px; height: 148px; z-index: 3; font-family: -apple-system, "SF Pro Text", system-ui, sans-serif; }
+	#status .time { position: absolute; left: 0; width: 330px; text-align: center; top: 48px; font-size: 47px; font-weight: 600; letter-spacing: -.4px; }
+	#status .icons { position: absolute; right: 70px; top: 56px; display: flex; gap: 16px; align-items: center; transform: scale(1.35); transform-origin: right center; }
+	#island { position: absolute; left: 50%; top: 30px; width: 344px; height: 102px; margin-left: -172px; border-radius: 51px; background: #000; z-index: 4; }
+	#safari { position: absolute; left: 0; bottom: 0; width: 1080px; height: 121px; z-index: 3; font-family: -apple-system, "SF Pro Text", system-ui, sans-serif; }
+	#safari .mini { position: absolute; left: 0; right: 0; top: 14px; text-align: center; font-size: 36px; font-weight: 500; letter-spacing: -.2px; }
+	#safari .home { position: absolute; left: 50%; bottom: 22px; width: 380px; height: 14px; margin-left: -190px; border-radius: 7px; }
+	#screenfade { position: absolute; inset: 0; background: #000; opacity: 0; z-index: 5; pointer-events: none; }
+	.iphone #ripple { width: 116px; height: 116px; margin: -58px 0 0 -58px; border: none; background: rgba(120,120,128,.36); box-shadow: 0 0 0 3px rgba(255,255,255,.55); }
+	.iphone #end { display: none; }
+	.iphone #caption, .iphone #top, .iphone #sub { display: none !important; }
+
+	/* Card scenes: title, quote, bullets or a big number, in brand colours, no recording needed. */
+	#cardScene { position: absolute; inset: 0; display: none; flex-direction: column; justify-content: center; padding: 0 180px; box-sizing: border-box; color: #fff; z-index: 6;
+		background: radial-gradient(1100px 700px at 80% 15%, rgba(212,166,58,.22), transparent 60%), radial-gradient(900px 600px at 10% 95%, rgba(80,130,220,.22), transparent 60%), linear-gradient(160deg, var(--navy-2), var(--navy)); }
+	#cardScene .ck { font-size: 30px; font-weight: 750; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 26px; }
+	#cardScene h2 { margin: 0; font-size: 92px; line-height: 1.04; font-weight: 800; letter-spacing: -2px; }
+	#cardScene p { margin: 34px 0 0; font-size: 40px; line-height: 1.4; color: rgba(255,255,255,.86); max-width: 1300px; }
+	#cardScene ul { margin: 46px 0 0; padding: 0; list-style: none; }
+	#cardScene li { font-size: 46px; line-height: 1.3; margin: 0 0 26px; padding-left: 64px; position: relative; font-weight: 650; }
+	#cardScene li::before { content: ""; position: absolute; left: 0; top: 16px; width: 26px; height: 26px; border-radius: 8px; background: var(--gold); }
+	#cardScene.quote h2 { font-size: 74px; font-weight: 700; font-style: italic; letter-spacing: -1px; }
+	#cardScene.quote h2::before { content: "\201C"; display: block; font-size: 220px; line-height: .6; color: var(--gold); font-style: normal; }
+	#cardScene.stat h2 { font-size: 240px; letter-spacing: -6px; color: var(--gold); }
+	#cardScene .logo { width: 150px; height: 150px; border-radius: 36px; background: #fff; display: none; align-items: center; justify-content: center; margin-bottom: 40px; }
+	#cardScene .logo img { width: 118px; height: 118px; object-fit: contain; }
+	#cardScene.withlogo .logo { display: flex; }
+	html.vertical #cardScene, html.iphone #cardScene { padding: 0 90px; }
+	html.vertical #cardScene h2, html.iphone #cardScene h2 { font-size: 84px; }
+	html.vertical #cardScene.stat h2, html.iphone #cardScene.stat h2 { font-size: 200px; }
+
+	/* Image scenes: a photo or screenshot filling the frame with a slow pan and zoom. */
+	#imgScene { position: absolute; inset: 0; display: none; overflow: hidden; background: #000; z-index: 6; }
+	#imgScene img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; will-change: transform; }
+
+	/* Burned-in captions (opt-in, storyboard.captions): bold, reel-style. */
+	#cap { position: absolute; left: 70px; right: 70px; bottom: 120px; text-align: center; color: #fff; font-size: 62px; font-weight: 850; line-height: 1.15; letter-spacing: -.5px; z-index: 9; opacity: 0; -webkit-text-stroke: 12px rgba(0,0,0,.85); paint-order: stroke fill; text-shadow: 0 6px 26px rgba(0,0,0,.45); }
+	#cap.center { bottom: auto; top: 58%; }
+	#cap.subtle { font-size: 40px; font-weight: 650; -webkit-text-stroke: 0; padding: 18px 28px; border-radius: 20px; background: rgba(0,0,0,.62); left: 50%; right: auto; transform: translateX(-50%); max-width: 1500px; }
+	html.vertical #cap, html.iphone #cap { font-size: 76px; bottom: 300px; }
+	html.vertical #cap.center, html.iphone #cap.center { bottom: auto; top: 60%; }
+	html.vertical #cap.subtle, html.iphone #cap.subtle { font-size: 44px; max-width: 960px; }
+	.vertical #end .plate { width: 220px; height: 220px; border-radius: 52px; }
+	.vertical #end .plate img { width: 176px; height: 176px; }
+</style>
+</head>
+<body>
+	<div id="bg"></div>
+	<div id="stage">
+		<div id="card">
+			<div id="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span id="url"></span></div>
+			<div id="view">
+				<div id="status"><span class="time" id="clock">9:41</span><span class="icons" id="sicons">
+					<svg width="36" height="22" viewBox="0 0 36 22"><rect x="0" y="14" width="6" height="8" rx="1.5" fill="currentColor"/><rect x="10" y="10" width="6" height="12" rx="1.5" fill="currentColor"/><rect x="20" y="5" width="6" height="17" rx="1.5" fill="currentColor"/><rect x="30" y="0" width="6" height="22" rx="1.5" fill="currentColor"/></svg>
+					<svg width="32" height="23" viewBox="0 0 32 23"><path d="M16 22.5l-4.6-5a6.6 6.6 0 019.2 0zM6.6 12.4l-3.3-3.6a18.4 18.4 0 0125.4 0l-3.3 3.6a13.4 13.4 0 00-18.8 0z" fill="currentColor"/><path d="M0 5.1a23.6 23.6 0 0132 0l-3 3.3a19.2 19.2 0 00-26 0z" fill="currentColor" opacity=".9"/></svg>
+					<svg width="52" height="24" viewBox="0 0 52 24"><rect x="1" y="1" width="44" height="22" rx="7" fill="none" stroke="currentColor" stroke-opacity=".45" stroke-width="2"/><rect x="4" y="4" width="38" height="16" rx="4.5" fill="currentColor"/><path d="M48 8.5v7a3.8 3.8 0 000-7z" fill="currentColor" opacity=".5"/></svg>
+				</span></div>
+				<div id="island"></div>
+				<div id="safari"><span class="mini" id="surl"></span><span class="home" id="shome"></span></div>
+				<div id="screenfade"></div>
+				<div id="inner">
+					<img id="shot" />
+					<div id="ripple"></div>
+					<svg id="cursor" viewBox="0 0 24 24"><path d="M4 2l15 11.5-6.4 1 3.6 7.3-3 1.4-3.6-7.4L4 20z" fill="#fff" stroke="#0b1f3f" stroke-width="1.6" stroke-linejoin="round"/></svg>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="top"><div class="brand"><span class="mini none"><img id="minilogo" alt="" /></span><span id="brandname"></span></div><div class="kicker" id="kicker"></div><div class="label" id="label"></div></div>
+	<div id="cardScene"><div class="logo"><img id="cardlogo" alt="" /></div><div class="ck"></div><h2></h2><p></p><ul></ul></div>
+	<div id="imgScene"><img id="imgshot" alt="" /></div>
+	<div id="cap"></div>
+	<div id="caption"></div>
+	<div id="sub"></div>
+	<div id="end"><div class="plate none"><img id="logo" alt="" /></div><h1></h1><p></p></div>
+	<div id="fade"></div>
+<script>
+	const $ = (id) => document.getElementById(id);
+	let lastSrc = "";
+	const esc = (t) => String(t).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
+	// s: one frame's state, computed by compose.mjs.
+	// Brand: { colors: {bg, bg2, accent}, logo: file URL, name } (all optional).
+	// Layout: { mode: "vertical" | "horizontal", shotW, shotH } — sizes the app frame and the screenshot.
+	window.setLayout = (l) => {
+		if (l.mode === "vertical" || l.mode === "phone") {
+			document.documentElement.classList.add("vertical");
+			document.body.classList.add("vertical");
+		}
+		if (l.mode === "phone") document.body.classList.add("phone");
+		if (l.mode === "iphone") {
+			document.documentElement.classList.add("iphone");
+			document.body.classList.add("iphone");
+			if (l.time) $("clock").textContent = l.time;
+			$("surl").textContent = l.url || "";
+		}
+		$("shot").style.width = l.shotW + "px";
+		$("shot").style.height = l.shotH + "px";
+		$("inner").style.width = l.shotW + "px";
+		$("inner").style.height = l.shotH + "px";
+	};
+	window.setBrand = async (b) => {
+		const r = document.documentElement.style;
+		if (b.colors?.bg) r.setProperty("--navy", b.colors.bg);
+		if (b.colors?.bg2) r.setProperty("--navy-2", b.colors.bg2);
+		if (b.colors?.accent) r.setProperty("--gold", b.colors.accent);
+		if (b.logo) {
+			$("logo").src = b.logo;
+			await $("logo").decode().catch(() => {});
+			$("logo").parentElement.classList.remove("none");
+			$("cardlogo").src = b.logo;
+			await $("cardlogo").decode().catch(() => {});
+			$("minilogo").src = b.logo;
+			await $("minilogo").decode().catch(() => {});
+			$("minilogo").parentElement.classList.remove("none");
+		}
+		if (b.name) {
+			const accent = b.accent || "";
+			$("brandname").innerHTML = accent && b.name.includes(accent) ? esc(b.name).replace(esc(accent), `<b>${esc(accent)}</b>`) : esc(b.name);
+		}
+	};
+	window.renderFrame = async (s) => {
+		if (s.src && s.src !== lastSrc) {
+			$("shot").src = s.src;
+			await $("shot").decode().catch(() => {});
+			lastSrc = s.src;
+		}
+		$("url").textContent = s.url || "";
+		$("card").style.transform = `translate3d(${s.cam.tx}px, ${s.cam.ty}px, 0) rotateX(${s.cam.rx}deg) rotateY(${s.cam.ry}deg) rotateZ(${s.cam.rz}deg) scale(${s.cam.scale})`;
+		$("inner").style.transformOrigin = `${s.zoom.fx}px ${s.zoom.fy}px`;
+		$("inner").style.transform = `translate(${-(s.pan || 0)}px, 0) scale(${s.zoom.z})`;
+		if (s.label !== undefined) {
+			$("kicker").textContent = s.label ? s.label.kicker || "" : "";
+			$("label").textContent = s.label ? s.label.text || "" : "";
+			$("top").style.opacity = String(s.labelO ?? 1);
+		}
+		if (s.sub !== undefined) {
+			$("sub").innerHTML = s.sub ? (s.sub.kicker ? `<small>${esc(s.sub.kicker)}</small>` : "") + esc(s.sub.text) : "";
+			$("sub").style.opacity = String(s.sub ? s.sub.o : 0);
+		}
+		$("cursor").style.display = s.cursor ? "block" : "none";
+		if (s.cursor) { $("cursor").style.left = s.cursor.x + "px"; $("cursor").style.top = s.cursor.y + "px"; }
+		if (s.ripple) {
+			$("ripple").style.left = s.ripple.x + "px"; $("ripple").style.top = s.ripple.y + "px";
+			$("ripple").style.opacity = String(1 - s.ripple.k);
+			$("ripple").style.transform = `scale(${0.4 + s.ripple.k * 1.2})`;
+		} else $("ripple").style.opacity = "0";
+		$("caption").innerHTML = s.caption ? `<small>${s.caption.kicker || ""}</small>${s.caption.text}` : "";
+		$("caption").style.opacity = String(s.caption ? s.caption.o : 0);
+		// endCard.accent: the part of the headline drawn in the accent colour (e.g. "Protector").
+		const h = s.end ? esc(s.end.headline) : "";
+		$("end").querySelector("h1").innerHTML = s.end && s.end.accent ? h.replace(esc(s.end.accent), `<b>${esc(s.end.accent)}</b>`) : h;
+		$("end").querySelector(".plate").style.transform = s.end ? `scale(${0.85 + 0.15 * Math.min(1, s.end.o)})` : "";
+		$("end").querySelector("p").textContent = s.end ? s.end.sub : "";
+		$("end").style.opacity = String(s.end ? s.end.o : 0);
+		$("fade").style.opacity = String(s.fade);
+		if (s.status) {
+			$("status").style.background = s.status.bg;
+			$("status").style.color = s.status.fg;
+			$("safari").style.background = s.status.bottomBg;
+			$("safari").style.color = s.status.bottomFg;
+			$("shome").style.background = s.status.bottomFg;
+		}
+		if (s.screenFade !== undefined) $("screenfade").style.opacity = String(s.screenFade);
+		// Card scene: kicker, headline, body, bullets revealed one by one.
+		const cs = $("cardScene");
+		if (s.card) {
+			const c = s.card;
+			cs.style.display = "flex";
+			cs.className = (c.kind || "title") + (c.logo ? " withlogo" : "");
+			cs.querySelector(".ck").textContent = c.kicker || "";
+			cs.querySelector("h2").textContent = c.headline || "";
+			cs.querySelector("p").textContent = c.body || "";
+			const ul = cs.querySelector("ul");
+			const items = c.bullets || [];
+			if (ul.childElementCount !== items.length || ul.dataset.key !== items.join("|")) {
+				ul.innerHTML = items.map((b) => `<li>${esc(b)}</li>`).join("");
+				ul.dataset.key = items.join("|");
+			}
+			const k = (d) => Math.max(0, Math.min(1, (c.t - d) / 0.45));
+			const ease = (v) => 1 - Math.pow(1 - v, 3);
+			const show = (el, d) => { const v = ease(k(d)); el.style.opacity = String(v); el.style.transform = `translateY(${(1 - v) * 28}px)`; };
+			show(cs.querySelector(".logo"), 0);
+			show(cs.querySelector(".ck"), 0.1);
+			show(cs.querySelector("h2"), 0.25);
+			show(cs.querySelector("p"), 0.6);
+			const step = items.length ? Math.max(0.35, (c.D - 1.6) / (items.length + 1)) : 0;
+			[...ul.children].forEach((li, i) => show(li, 0.9 + i * step));
+			cs.style.opacity = String(Math.min(1, c.t / 0.25, (c.D - c.t) / 0.25));
+		} else cs.style.display = "none";
+		// Image scene with a slow pan and zoom (Ken Burns).
+		const is = $("imgScene");
+		if (s.image) {
+			is.style.display = "block";
+			if ($("imgshot").dataset.src !== s.image.src) {
+				$("imgshot").src = s.image.src;
+				$("imgshot").dataset.src = s.image.src;
+				await $("imgshot").decode().catch(() => {});
+			}
+			$("imgshot").style.objectFit = s.image.fit || "cover";
+			$("imgshot").style.transform = `translate(${s.image.x}%, ${s.image.y}%) scale(${s.image.scale})`;
+			is.style.opacity = String(Math.min(1, s.image.t / 0.3, (s.image.D - s.image.t) / 0.3));
+		} else is.style.display = "none";
+		// Burned-in captions.
+		const cap = $("cap");
+		if (s.burn) {
+			cap.className = s.burn.style || "";
+			cap.textContent = s.burn.text;
+			cap.style.opacity = String(s.burn.o);
+		} else cap.style.opacity = "0";
+	};
+</script>
+</body>
+</html>

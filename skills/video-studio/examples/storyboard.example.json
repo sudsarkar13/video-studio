@@ -1,0 +1,207 @@
+{
+  "title": "Acme product demo (example)",
+  "voice": "bm_fable",
+  "speed": 1,
+  "baseUrl": "https://app.example.com",
+  "brand": {
+    "name": "Acme",
+    "logo": "../../public/logo.png",
+    "colors": {
+      "bg": "#0b1f3f",
+      "bg2": "#13315f",
+      "accent": "#d4a63a"
+    }
+  },
+  "viewport": {
+    "width": 1600,
+    "height": 900,
+    "scale": 2
+  },
+  "output": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30
+  },
+  "music": {
+    "mood": "light",
+    "bpm": 84,
+    "seed": 7,
+    "level": -30
+  },
+  "sfx": {
+    "click": true,
+    "transition": true,
+    "volume": 0.35
+  },
+  "hideNav": [
+    "Admin",
+    "Internal tools"
+  ],
+  "hideText": [
+    "Need Help?"
+  ],
+  "hideSelectors": [
+    "[data-sonner-toast]",
+    "[aria-label*=\"chat\" i]"
+  ],
+  "guardText": [
+    "Alpha",
+    "Internal"
+  ],
+  "agentAudio": null,
+  "scenes": [
+    {
+      "id": "01-home",
+      "title": "Home page",
+      "camera": "push-in",
+      "fit": "narration",
+      "narration": "Meet Acme. Describe what you need, and it does the rest.",
+      "setup": [
+        {
+          "do": "goto",
+          "url": "/"
+        },
+        {
+          "do": "waitFor",
+          "selector": "h1",
+          "timeout": 20000
+        },
+        {
+          "do": "click",
+          "to": {
+            "role": "button",
+            "name": "Accept all"
+          },
+          "optional": true
+        }
+      ],
+      "actions": [
+        {
+          "do": "wait",
+          "ms": 1200
+        },
+        {
+          "do": "type",
+          "to": {
+            "selector": "textarea"
+          },
+          "text": "A sample request typed like a person would.",
+          "delay": 38
+        },
+        {
+          "do": "move",
+          "to": {
+            "role": "button",
+            "name": "Get started"
+          }
+        },
+        {
+          "do": "wait",
+          "ms": 1500
+        }
+      ]
+    },
+    {
+      "id": "02-dashboard",
+      "title": "Dashboard at an angle",
+      "camera": "tilt-scroll",
+      "fit": "narration",
+      "narration": "Everything you work on lives in one place.",
+      "setup": [
+        {
+          "do": "goto",
+          "url": "/dashboard"
+        },
+        {
+          "do": "wait",
+          "ms": 1500
+        }
+      ],
+      "actions": [
+        {
+          "do": "wait",
+          "ms": 1000
+        },
+        {
+          "do": "scrollBy",
+          "px": 1200,
+          "ms": 4000
+        }
+      ]
+    },
+    {
+      "id": "03-feature",
+      "title": "The main feature",
+      "camera": "auto-zoom",
+      "fit": "narration",
+      "caption": {
+        "kicker": "AI assistant",
+        "text": "Edits you can review"
+      },
+      "narration": "Ask for a change in plain words, and review it before you keep it.",
+      "endCard": {
+        "headline": "Acme",
+        "accent": "",
+        "sub": "example.com"
+      },
+      "setup": [
+        {
+          "do": "goto",
+          "url": "/workspace/sample"
+        }
+      ],
+      "actions": [
+        {
+          "do": "click",
+          "to": {
+            "role": "button",
+            "name": "Ask AI"
+          }
+        },
+        {
+          "do": "type",
+          "to": {
+            "selector": "textarea"
+          },
+          "text": "Make this shorter.",
+          "delay": 30
+        },
+        {
+          "do": "click",
+          "to": {
+            "role": "button",
+            "name": "Send",
+            "exact": true
+          }
+        },
+        {
+          "do": "mark",
+          "name": "ramp-start"
+        },
+        {
+          "do": "waitFor",
+          "to": {
+            "role": "button",
+            "name": "Accept",
+            "exact": true
+          },
+          "timeout": 120000
+        },
+        {
+          "do": "mark",
+          "name": "ramp-end"
+        },
+        {
+          "do": "focus",
+          "to": {
+            "role": "button",
+            "name": "Accept",
+            "exact": true
+          },
+          "zoom": 1.4,
+          "ms": 3000
+        }
+      ]
+    }
+  ]
+}
