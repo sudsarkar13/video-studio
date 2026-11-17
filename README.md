@@ -13,7 +13,7 @@ As a Claude Code plugin:
 /plugin install video-studio@video-studio
 ```
 
-Or download the zip from https://sudeeptasarkar.in, unzip it into `~/.claude/skills/`, and ask Claude for a video. The first time, it walks you through setup (see `reference/setup.md`).
+Or download the zip from https://sudeeptasarkar.in, unzip it into `~/.claude/skills/`, and run `node ~/.claude/skills/video-studio/install/install.mjs` (the same installer on macOS, Linux and Windows).
 
 ## Platform status
 

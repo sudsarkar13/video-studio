@@ -1,6 +1,8 @@
-# Setup (first run)
+# Manual setup
 
-Video Studio ships no installer script. You set it up by running the commands below, one at a time, so the person can see and approve each one. Run the doctor first (`node $S/doctor.mjs`), and do only the steps it reports as not ready.
+The usual way to set up is the installer, `node <skill folder>/install/install.mjs`. This page does the same steps as plain commands, for people who want to see and approve each one, or when the installer fails. Run the doctor first (`node $S/doctor.mjs`), and do only the steps it reports as not ready.
+
+The pinned values below must match `scripts/lib/paths.mjs`; `tools/build_zip.py` checks that before every release.
 
 ## Rules
 

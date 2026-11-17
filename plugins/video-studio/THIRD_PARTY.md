@@ -1,6 +1,6 @@
 # Third-party components
 
-Video Studio does not bundle these. The setup steps in `skills/video-studio/reference/setup.md` fetch them, pinned, into the data folder, or they are already on your system.
+Video Studio does not bundle these. The installer (`install/install.mjs`, or the same steps by hand in `reference/setup.md`) fetches them, pinned, into the data folder, or they are already on your system.
 
 | Component | Used for | Licence | Fetched from |
 |---|---|---|---|

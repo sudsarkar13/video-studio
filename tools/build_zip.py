@@ -4,11 +4,12 @@
 
 The zip unpacks to a single `video-studio/` folder (the skill) that people drop into their Claude
 skills folder; README.md, THIRD_PARTY.md and LICENSE (if present) go inside it. node_modules,
-caches and OS litter are left out; the setup steps in reference/setup.md fetch dependencies into the data folder.
+caches and OS litter are left out; install/install.mjs fetches dependencies into the data folder.
 """
 
 import json
 import os
+import re
 import sys
 import zipfile
 
@@ -19,7 +20,27 @@ SKIP_DIRS = {"node_modules", "__pycache__", ".git"}
 SKIP_FILES = {".DS_Store"}
 
 
+def check_pins() -> None:
+    """Fail if reference/setup.md no longer repeats every pin from scripts/lib/paths.mjs."""
+    with open(os.path.join(SKILL, "scripts", "lib", "paths.mjs")) as fh:
+        js = fh.read()
+    with open(os.path.join(SKILL, "reference", "setup.md")) as fh:
+        md = fh.read()
+    pins = re.findall(r'"([0-9a-f]{64})"', js)  # model checksums
+    pins += re.findall(r'PLAYWRIGHT_PIN = "(playwright-core@[^"]+)"', js)
+    pins += re.findall(r'"((?:kokoro-onnx|soundfile|numpy)[=<>][^"]+)"', js)
+    pins += re.findall(r'MODEL_URL = "([^"]+)"', js)
+    if len(pins) < 7:
+        sys.exit(f"pin check: found only {len(pins)} pins in paths.mjs; update check_pins()")
+    plain = md.replace("`", "")
+    missing = [p for p in pins if p not in plain]
+    if missing:
+        sys.exit("pin check: reference/setup.md is out of date with scripts/lib/paths.mjs: " + ", ".join(missing))
+    print(f"pin check: setup.md matches paths.mjs ({len(pins)} pins)")
+
+
 def main() -> None:
+    check_pins()
     with open(os.path.join(PLUGIN, ".claude-plugin", "plugin.json")) as fh:
         version = json.load(fh)["version"]
     out_dir = os.path.join(ROOT, "dist")

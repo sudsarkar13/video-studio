@@ -27,9 +27,9 @@ Short "instant" cuts reuse the same recordings.
 
 | System | Status |
 |---|---|
-| macOS (Apple Silicon) | **Tested.** Every video type, desktop and iPhone layouts, and the setup steps and doctor. |
-| Linux | **Not tested yet.** Written for it (setup commands, paths, headless recording without a display), but never run. |
-| Windows | **Not tested yet.** Written for it (PowerShell setup commands, Chrome/Edge detection, paths), but never run. |
+| macOS (Apple Silicon) | **Tested.** Every video type, desktop and iPhone layouts, and the installer and doctor. |
+| Linux | **Not tested yet.** Written for it (installer, paths, headless recording without a display), but never run. |
+| Windows | **Not tested yet.** Written for it (installer, Chrome/Edge detection, paths), but never run. |
 
 **Please help test.** If you try it on Linux or Windows, open a [Platform test report](https://github.com/sudsarkar13/video-studio/issues/new?template=platform-test.yml), even if everything worked. Bugs go in a [Bug report](https://github.com/sudsarkar13/video-studio/issues/new?template=bug-report.yml). Every report is reproduced and fixed by hand; see [CONTRIBUTING.md](https://github.com/sudsarkar13/video-studio/blob/main/CONTRIBUTING.md).
 
@@ -50,7 +50,7 @@ Short "instant" cuts reuse the same recordings.
 /plugin install video-studio@video-studio
 ```
 
-Then ask Claude for a video. The first time, it walks you through setup: it shows each command (the browser library, the Python voice engine, the voice model) and runs it with your approval, then checks everything.
+Then ask Claude for a video. The first time, it runs the installer with your approval, which sets up the browser library, the Python voice engine and the voice model, then checks everything.
 
 ### From the zip (sudeeptasarkar.in)
 
@@ -59,10 +59,14 @@ Then ask Claude for a video. The first time, it walks you through setup: it show
    - Windows: `%USERPROFILE%\.claude\skills\`
 
    You should end up with `.claude/skills/video-studio/SKILL.md`.
-2. Ask Claude for a video. The first time, it runs the setup steps in `reference/setup.md` with your approval. You can also run them yourself; they are plain commands for macOS, Linux and Windows.
-3. Check it: `node ~/.claude/skills/video-studio/scripts/doctor.mjs`
+2. Run the installer once (the same command on every OS):
+   - macOS / Linux: `node ~/.claude/skills/video-studio/install/install.mjs`
+   - Windows: `node "%USERPROFILE%\.claude\skills\video-studio\install\install.mjs"`
+3. Check it: `node ~/.claude/skills/video-studio/install/install.mjs --check`
 
-There is no installer script. Setup writes only to a data folder (`~/.local/share/video-studio`, or `%LOCALAPPDATA%\video-studio` on Windows). It never installs system software for you; if ffmpeg or a browser is missing, the doctor prints the command for your OS.
+Prefer to see every step? `reference/setup.md` has the same steps as plain commands for each OS.
+
+The installer writes only to a data folder (`~/.local/share/video-studio`, or `%LOCALAPPDATA%\video-studio` on Windows). It never installs system software for you; if ffmpeg or a browser is missing, the doctor prints the command for your OS.
 
 ## Example prompts
 
@@ -78,10 +82,10 @@ There is no installer script. Setup writes only to a data folder (`~/.local/shar
 - Node and Python scripts in this plugin.
 - A Chromium-based browser (Chrome, Edge or Playwright's Chromium) driven by playwright-core, with its own profile in the data folder, separate from your normal browser.
 - ffmpeg.
-- The setup commands in `skills/video-studio/reference/setup.md`, which Claude runs one at a time with your approval (there is no installer script). They install playwright-core with npm, create a Python environment, and download the voice model, all inside the data folder. The plugin folder has no dependencies and is never written to.
+- The installer, `install/install.mjs` (one Node script for macOS, Linux and Windows; the same steps by hand are in `reference/setup.md`). It installs playwright-core with npm, creates a Python environment, and downloads the voice model, all inside the data folder. The plugin folder has no dependencies and is never written to.
 
 **Fetches over the network:**
-- **At install:** playwright-core 1.60.0 from npm and three Python packages from PyPI, all pinned in `reference/setup.md`; the Kokoro voice model (two files) from the kokoro-onnx GitHub release, checked against fixed SHA-256 checksums.
+- **At install:** playwright-core 1.60.0 from npm and three Python packages from PyPI, all pinned in `scripts/lib/paths.mjs`; the Kokoro voice model (two files) from the kokoro-onnx GitHub release, checked against fixed SHA-256 checksums.
 - **Only if needed:** Playwright's Chromium, if neither Chrome nor Edge is installed.
 - **During recording:** only the URLs written in your storyboard.
 
@@ -103,7 +107,7 @@ There is no installer script. Setup writes only to a data folder (`~/.local/shar
 
 ## Roadmap
 
-1. **Phase 1 (this release):** video-type menu; desktop and iPhone demos; blog-to-video, reels, launches, tutorials and slideshows; cards, images and captions; cross-platform setup steps and doctor.
+1. **Phase 1 (this release):** video-type menu; desktop and iPhone demos; blog-to-video, reels, launches, tutorials and slideshows; cards, images and captions; cross-platform installer and doctor.
 2. **Phase 2:** voice cloning from a short sample, with a commercially usable open-source model and consent recorded.
 3. **Phase 3:** AI presenter from a photo, lip-synced, placed over the screen. You choose where it runs: your own NVIDIA GPU, your CPU (slow), or a rented cloud GPU (paid, and it uploads the photo and voice).
 
