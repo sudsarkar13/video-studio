@@ -35,7 +35,7 @@ if (b.name === "bundled Chromium") {
 	try {
 		ok = !!pw && fs.existsSync(pw.chromium.executablePath());
 	} catch {}
-	add("Browser", ok, ok ? "Playwright's bundled Chromium" : "no Google Chrome, Microsoft Edge or bundled Chromium", `Install Google Chrome, or run: cd "${SKILL}" && npx playwright-core install chromium`);
+	add("Browser", ok, ok ? "Playwright's bundled Chromium" : "no Google Chrome, Microsoft Edge or bundled Chromium", `Install Google Chrome, or run: node "${path.join(SKILL, "node_modules", "playwright-core", "cli.js")}" install chromium`);
 } else add("Browser", true, b.name, "");
 
 // ffmpeg and the pieces of it the skill uses
@@ -63,6 +63,12 @@ const bad = Object.entries(want).filter(([f, size]) => {
 	}
 });
 add("Voice model (Kokoro-82M)", bad.length === 0, bad.length ? `missing or incomplete: ${bad.map(([f]) => f).join(", ")}` : MODELS, `Run the installer: ${INSTALL}`);
+
+// Display (Linux): recording falls back to headless without one; signing in needs one.
+if (OS === "linux") {
+	const disp = !!(process.env.DISPLAY || process.env.WAYLAND_DISPLAY);
+	add("Display", true, disp ? "available" : "none: recording runs headless; sign in on a machine with a display", "", true);
+}
 
 // Disk space
 try {

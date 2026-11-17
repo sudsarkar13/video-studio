@@ -34,12 +34,20 @@ if (!base) {
 }
 const vp = board.viewport || { width: 1600, height: 900, scale: 2 };
 
+const NO_DISPLAY = process.platform === "linux" && !process.env.DISPLAY && !process.env.WAYLAND_DISPLAY;
+const HEADLESS = process.env.VIDEO_STUDIO_HEADLESS === "1" || args.headless === true || NO_DISPLAY;
+if (mode === "login" && NO_DISPLAY) {
+	console.error("Signing in needs a screen. Run login on a machine with a display (or forward X11), then copy the data folder's browser-profile over.");
+	process.exit(2);
+}
 const MOBILE = !!(board.device && board.device.mobile);
 const ANDROID_UA = "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Mobile Safari/537.36";
 const launch = () =>
 	chromium.launchPersistentContext(profile, {
 		...BROWSER.launch, // Google Chrome, else Microsoft Edge, else the bundled Chromium (lib/paths.mjs)
-		headless: false,
+		// A visible window by default (the person signs in there). Headless when there is no display
+		// (Linux servers, WSL, CI) or VIDEO_STUDIO_HEADLESS=1; sign-in still needs a display.
+		headless: HEADLESS && mode !== "login",
 		viewport: { width: vp.width, height: vp.height },
 		deviceScaleFactor: vp.scale,
 		permissions: ["microphone"],

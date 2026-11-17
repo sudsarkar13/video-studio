@@ -40,10 +40,10 @@ if [[ ! -x "$VENV/bin/python" ]]; then
 	fi
 fi
 if command -v uv >/dev/null; then
-	uv pip install --python "$VENV/bin/python" -q "kokoro-onnx>=0.4,<1" soundfile numpy
+	uv pip install --python "$VENV/bin/python" -q kokoro-onnx==0.6.1 soundfile==0.14.0 "numpy>=1.26,<3"
 else
 	"$VENV/bin/python" -m pip install -q --upgrade pip
-	"$VENV/bin/python" -m pip install -q "kokoro-onnx>=0.4,<1" soundfile numpy
+	"$VENV/bin/python" -m pip install -q kokoro-onnx==0.6.1 soundfile==0.14.0 "numpy>=1.26,<3"
 fi
 
 sha256() { if command -v sha256sum >/dev/null; then sha256sum "$1" | cut -d' ' -f1; else shasum -a 256 "$1" | cut -d' ' -f1; fi; }
@@ -62,7 +62,7 @@ say "Browser"
 BROWSER="$(cd "$SKILL_DIR/scripts" && node -e 'import("./lib/paths.mjs").then(m=>console.log(m.browser().name))')"
 if [[ "$BROWSER" == "bundled Chromium" ]]; then
 	say "No Google Chrome or Microsoft Edge found; downloading Playwright's Chromium"
-	(cd "$SKILL_DIR" && npx playwright-core install chromium)
+	node "$SKILL_DIR/node_modules/playwright-core/cli.js" install chromium
 else
 	echo "   using $BROWSER"
 fi

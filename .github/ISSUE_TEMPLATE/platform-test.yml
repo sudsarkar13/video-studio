@@ -1,0 +1,60 @@
+name: Platform test report
+description: Tried Video Studio on Linux, Windows or another setup? Tell us what worked and what did not.
+title: "[Test] <OS> <version>: <worked / partly / failed>"
+labels: ["platform-test"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for testing. Video Studio is tested on macOS only so far; Linux and Windows reports are the most useful thing you can send.
+        The maintainer reads every report, reproduces it and applies fixes by hand. **Do not paste passwords, tokens, client data or private URLs.**
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options: [Linux, Windows, macOS, WSL, Other]
+    validations:
+      required: true
+  - type: input
+    id: os_version
+    attributes:
+      label: OS version and machine
+      placeholder: "Ubuntu 24.04 x64 / Windows 11 23H2 / macOS 15 Apple Silicon"
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: How did you install it?
+      options: ["Claude Code plugin (/plugin install)", "Zip from sudeeptasarkar.in", "Cloned the repo"]
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Doctor output
+      description: "Run `node <skill folder>/scripts/doctor.mjs` and paste the whole output."
+      render: text
+    validations:
+      required: true
+  - type: checkboxes
+    id: worked
+    attributes:
+      label: What worked?
+      options:
+        - label: Installer finished without errors
+        - label: Voice samples (tts.py samples)
+        - label: Card or slideshow video (no recording)
+        - label: Recording a website (capture.mjs record)
+        - label: Full render with music (compose.mjs)
+        - label: iPhone (9:16) layout
+  - type: textarea
+    id: problems
+    attributes:
+      label: What went wrong?
+      description: Exact error messages, which step, and what you expected. Attach a short clip or screenshot if it helps.
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      placeholder: "Node 22.11, Python 3.12.7, ffmpeg 7.1, Chrome 131 / Edge / bundled Chromium"

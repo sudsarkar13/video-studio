@@ -51,7 +51,7 @@ export const browser = () => {
 	if (want && want !== "chrome" && want !== "msedge" && want !== "bundled") return { name: want, launch: { executablePath: want } };
 	if (want === "bundled") return { name: "bundled Chromium", launch: {} };
 	for (const ch of want ? [want] : ["chrome", "msedge"]) if (CANDIDATES[ch].some(exists)) return { name: ch === "chrome" ? "Google Chrome" : "Microsoft Edge", launch: { channel: ch } };
-	return { name: "bundled Chromium", launch: {} }; // needs: npx playwright-core install chromium
+	return { name: "bundled Chromium", launch: {} }; // needs: node node_modules/playwright-core/cli.js install chromium (the installer does this)
 };
 
 export const browserCandidates = CANDIDATES;

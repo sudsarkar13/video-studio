@@ -1,0 +1,35 @@
+name: Bug report
+description: Something in Video Studio did not work as described.
+title: "[Bug] <short description>"
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The maintainer verifies every report and applies fixes by hand, so the clearer the steps, the faster the fix.
+        **Do not paste passwords, tokens, client data or private URLs.**
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The prompt you gave Claude, the command that failed, and the storyboard (redact anything private).
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Error output
+      render: text
+  - type: input
+    id: env
+    attributes:
+      label: OS and versions
+      placeholder: "Windows 11, Node 22, Python 3.12, ffmpeg 7.1, Chrome 131"
+    validations:
+      required: true

@@ -34,12 +34,16 @@ Push-Location $SkillDir; npm install --no-audit --no-fund --silent; Pop-Location
 Say "Python environment for the voice and music engines: $Venv"
 if (-not (Test-Path $Py)) {
 	if (Get-Command uv -ErrorAction SilentlyContinue) { uv venv --python 3.12 $Venv -q }
-	elseif (Get-Command py -ErrorAction SilentlyContinue) { py -3.12 -m venv $Venv }
+	elseif (Get-Command py -ErrorAction SilentlyContinue) {
+		$made = $false
+		foreach ($v in "3.12", "3.11", "3.13", "3.10") { py "-$v" -m venv $Venv 2>$null; if ($LASTEXITCODE -eq 0) { $made = $true; break } }
+		if (-not $made) { Fail "No Python 3.10-3.13 found by the py launcher: winget install Python.Python.3.12 (or install uv)" }
+	}
 	elseif (Get-Command python -ErrorAction SilentlyContinue) { python -m venv $Venv }
 	else { Fail "Python 3.10-3.12 is needed: winget install Python.Python.3.12 (or install uv)" }
 }
-if (Get-Command uv -ErrorAction SilentlyContinue) { uv pip install --python $Py -q "kokoro-onnx>=0.4,<1" soundfile numpy }
-else { & $Py -m pip install -q --upgrade pip; & $Py -m pip install -q "kokoro-onnx>=0.4,<1" soundfile numpy }
+if (Get-Command uv -ErrorAction SilentlyContinue) { uv pip install --python $Py -q kokoro-onnx==0.6.1 soundfile==0.14.0 "numpy>=1.26,<3" }
+else { & $Py -m pip install -q --upgrade pip; & $Py -m pip install -q kokoro-onnx==0.6.1 soundfile==0.14.0 "numpy>=1.26,<3" }
 
 foreach ($name in $Files.Keys) {
 	$f = Join-Path $Models $name
@@ -56,7 +60,7 @@ $browser = node -e "import('./lib/paths.mjs').then(m=>console.log(m.browser().na
 Pop-Location
 if ($browser -eq "bundled Chromium") {
 	Say "No Google Chrome or Microsoft Edge found; downloading Playwright's Chromium"
-	Push-Location $SkillDir; npx playwright-core install chromium; Pop-Location
+	node (Join-Path $SkillDir "node_modules\playwright-core\cli.js") install chromium
 } else { Write-Host "   using $browser" }
 
 $ff = if ($env:VIDEO_STUDIO_FFMPEG) { $env:VIDEO_STUDIO_FFMPEG } else { "ffmpeg" }

@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+	html, body { margin: 0; background: transparent; }
+	.icon { width: 1024px; height: 1024px; position: relative; overflow: hidden; display: none; }
+	body[data-show="a"] #a, body[data-show="b"] #b, body[data-show="c"] #c { display: block; }
+
+	/* A: gold play button on deep navy, with a soft sound wave: "a video that speaks". */
+	#a { background: radial-gradient(700px 600px at 78% 12%, rgba(240,190,80,.38), transparent 60%), radial-gradient(600px 600px at 8% 100%, rgba(70,120,230,.45), transparent 60%), linear-gradient(155deg, #18306a, #0a1633); border-radius: 0; }
+	#a .disc { position: absolute; left: 212px; top: 212px; width: 600px; height: 600px; border-radius: 50%; background: linear-gradient(150deg, #ffd66b, #e3a92f); box-shadow: 0 40px 90px rgba(0,0,0,.45), inset 0 -18px 40px rgba(150,90,0,.35); }
+	#a .tri { position: absolute; left: 430px; top: 362px; width: 0; height: 0; border-top: 150px solid transparent; border-bottom: 150px solid transparent; border-left: 250px solid #0d1d44; filter: drop-shadow(0 6px 0 rgba(255,255,255,.18)); }
+	#a .wave { position: absolute; left: 0; right: 0; bottom: 92px; display: flex; justify-content: center; gap: 22px; align-items: flex-end; height: 120px; }
+	#a .wave i { width: 26px; border-radius: 13px; background: rgba(255,255,255,.85); }
+
+	/* B: a film frame with a play triangle inside a rounded tile: "studio". */
+	#b { background: linear-gradient(150deg, #6f3cf5, #2a1a8c 55%, #120d4a); }
+	#b .frame { position: absolute; left: 150px; top: 230px; width: 724px; height: 564px; border-radius: 70px; background: rgba(255,255,255,.95); box-shadow: 0 40px 90px rgba(0,0,0,.4); }
+	#b .holes { position: absolute; left: 150px; width: 724px; display: flex; justify-content: space-evenly; }
+	#b .holes i { width: 54px; height: 34px; border-radius: 10px; background: #2a1a8c; }
+	#b .tri { position: absolute; left: 450px; top: 382px; width: 0; height: 0; border-top: 130px solid transparent; border-bottom: 130px solid transparent; border-left: 220px solid #ff5b8a; }
+
+	/* C: a phone and a monitor overlapping with a play button: "desktop and mobile". */
+	#c { background: radial-gradient(800px 700px at 85% 0%, rgba(0,220,190,.35), transparent 60%), linear-gradient(160deg, #0f3b4a, #071a24); }
+	#c .mon { position: absolute; left: 110px; top: 250px; width: 640px; height: 420px; border-radius: 34px; background: #eaf6f5; box-shadow: 0 30px 70px rgba(0,0,0,.45); }
+	#c .stand { position: absolute; left: 370px; top: 670px; width: 120px; height: 70px; background: #bcd8d6; border-radius: 0 0 18px 18px; }
+	#c .phone { position: absolute; left: 620px; top: 330px; width: 290px; height: 520px; border-radius: 52px; background: #ffffff; border: 16px solid #0b2530; box-shadow: 0 30px 70px rgba(0,0,0,.5); }
+	#c .tri1 { position: absolute; left: 345px; top: 380px; width: 0; height: 0; border-top: 80px solid transparent; border-bottom: 80px solid transparent; border-left: 136px solid #00b39b; }
+	#c .tri2 { position: absolute; left: 738px; top: 528px; width: 0; height: 0; border-top: 52px solid transparent; border-bottom: 52px solid transparent; border-left: 88px solid #00b39b; }
+</style>
+</head>
+<body data-show="c">
+	<div class="icon" id="a"><div class="disc"></div><div class="tri"></div>
+		<div class="wave"><i style="height:40px"></i><i style="height:80px"></i><i style="height:120px"></i><i style="height:64px"></i><i style="height:100px"></i><i style="height:48px"></i><i style="height:90px"></i><i style="height:36px"></i></div></div>
+	<div class="icon" id="b"><div class="frame"></div>
+		<div class="holes" style="top:262px"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+		<div class="holes" style="top:728px"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+		<div class="tri"></div></div>
+	<div class="icon" id="c"><div class="mon"></div><div class="stand"></div><div class="phone"></div><div class="tri1"></div><div class="tri2"></div></div>
+</body>
+</html>
