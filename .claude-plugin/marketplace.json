@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "video-studio",
-      "source": "./",
+      "source": "./plugins/video-studio",
       "description": "Automatic product demos, blog-to-video, shorts/reels, launches, tutorials and slideshows with open-source voices and generated music."
     }
   ]

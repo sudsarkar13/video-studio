@@ -18,6 +18,6 @@ The maintainer reads every issue, reproduces it, and applies and verifies fixes 
 
 ## Releases
 
-- The version lives in `.claude-plugin/plugin.json`.
+- The version lives in `plugins/video-studio/.claude-plugin/plugin.json`.
 - Plugin users get updates with `/plugin update video-studio`.
 - The zip is rebuilt with `python3 tools/build_zip.py` and published on https://sudeeptasarkar.in.

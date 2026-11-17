@@ -13,13 +13,14 @@ import sys
 import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SKILL = os.path.join(ROOT, "skills", "video-studio")
+PLUGIN = os.path.join(ROOT, "plugins", "video-studio")
+SKILL = os.path.join(PLUGIN, "skills", "video-studio")
 SKIP_DIRS = {"node_modules", "__pycache__", ".git"}
 SKIP_FILES = {".DS_Store", "package-lock.json"}
 
 
 def main() -> None:
-    with open(os.path.join(ROOT, ".claude-plugin", "plugin.json")) as fh:
+    with open(os.path.join(PLUGIN, ".claude-plugin", "plugin.json")) as fh:
         version = json.load(fh)["version"]
     out_dir = os.path.join(ROOT, "dist")
     os.makedirs(out_dir, exist_ok=True)
@@ -40,13 +41,13 @@ def main() -> None:
                     z.writestr(info, fh.read(), zipfile.ZIP_DEFLATED)
                 count += 1
         for extra in ("README.md", "THIRD_PARTY.md", "LICENSE"):
-            p = os.path.join(ROOT, extra)
+            p = os.path.join(PLUGIN, extra)
             if os.path.exists(p):
                 z.write(p, os.path.join("video-studio", extra))
                 count += 1
     size = os.path.getsize(out) / 1024
     print(f"{out}: {count} files, {size:.0f} KB")
-    if not os.path.exists(os.path.join(ROOT, "LICENSE")):
+    if not os.path.exists(os.path.join(PLUGIN, "LICENSE")):
         print("note: no LICENSE file yet; add one before publishing", file=sys.stderr)
 
 

@@ -14,7 +14,7 @@ Copy these into the developer portal. Everything here matches the code in this r
 | Homepage | https://sudeeptasarkar.in |
 | Support | https://github.com/sudsarkar13/video-studio/issues |
 | Licence | MIT |
-| Icon | `.claude-plugin/icon.png` (1024 × 1024 PNG) |
+| Icon | `plugins/video-studio/.claude-plugin/icon.png` (1024 × 1024 PNG) |
 | Install | `/plugin marketplace add sudsarkar13/video-studio`, then `/plugin install video-studio@video-studio` |
 
 ## Tagline (one line)
@@ -98,8 +98,8 @@ Anthropic's Software Directory Policy lists **"AI generation of video, audio, or
 You need a **paid claude.ai plan** (Pro, Max, Team or Enterprise; on Team or Enterprise an Owner submits) and **GitHub connected** to your claude.ai account. The portal checks that you can push to the repo, so connect the `sudsarkar13` account.
 
 1. Go to **https://claude.ai/directory/manage**, then **Submit new**, then **Plugin bundle**.
-2. **Source:** `sudsarkar13/video-studio`. Leave the plugin path empty (the plugin is the repo root) and the branch empty (`main`). Click **Validate**.
-3. **Listing details:** read from `plugin.json` and `README.md`. To change them, edit those files, push, and validate again.
+2. **Source:** `sudsarkar13/video-studio`, plugin path **`plugins/video-studio`**, branch empty (`main`). Click **Validate**.
+3. **Listing details:** read from `plugins/video-studio/.claude-plugin/plugin.json` and `plugins/video-studio/README.md`. To change them, edit those files, push, and validate again.
 4. **Data handling** (answers):
    - Reads or stores personal data? **No.** It records only the app the user points it at, with the user's sample data; files stay on the user's machine.
    - Sends data to services other than declared connectors? **No.** No uploads, no telemetry. It only downloads its own dependencies and the voice model at install.
