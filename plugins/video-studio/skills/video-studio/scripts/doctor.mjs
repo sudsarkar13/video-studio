@@ -3,7 +3,8 @@
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { FFMPEG, HOME_DIR, INSTALL_CMD as INSTALL, MODELS, NODE_DIR, PY, browser, loadPlaywright } from "./lib/paths.mjs";
+import { createHash } from "node:crypto";
+import { FFMPEG, HOME_DIR, MODELS, NODE_DIR, PY, SETUP_DOC, browser, loadPlaywright } from "./lib/paths.mjs";
 
 const OS = process.platform === "win32" ? "windows" : process.platform === "darwin" ? "macos" : "linux";
 const run = (cmd, args) => spawnSync(cmd, args, { encoding: "utf8", timeout: 20000 });
@@ -19,9 +20,9 @@ let pw = null;
 try {
 	pw = loadPlaywright();
 	const inData = fs.existsSync(path.join(NODE_DIR, "node_modules", "playwright-core", "package.json"));
-	add("playwright-core", inData, inData ? `installed in ${NODE_DIR}` : "found outside the data folder (development copy)", `Run the installer: ${INSTALL}`);
+	add("playwright-core", inData, inData ? `installed in ${NODE_DIR}` : "found outside the data folder (development copy)", `Follow ${SETUP_DOC}, step 1`);
 } catch {
-	add("playwright-core", false, "not installed", `Run the installer: ${INSTALL}`);
+	add("playwright-core", false, "not installed", `Follow ${SETUP_DOC}, step 1`);
 }
 
 // Browser
@@ -31,7 +32,7 @@ if (b.name === "bundled Chromium") {
 	try {
 		ok = !!pw && fs.existsSync(pw.chromium.executablePath());
 	} catch {}
-	add("Browser", ok, ok ? "Playwright's bundled Chromium" : "no Google Chrome, Microsoft Edge or bundled Chromium", `Install Google Chrome, or run: node "${path.join(NODE_DIR, "node_modules", "playwright-core", "cli.js")}" install chromium`);
+	add("Browser", ok, ok ? "Playwright's bundled Chromium" : "no Google Chrome, Microsoft Edge or bundled Chromium", `Install Google Chrome, or follow ${SETUP_DOC}, step 4`);
 } else add("Browser", true, b.name, "");
 
 // ffmpeg and the pieces of it the skill uses
@@ -47,18 +48,33 @@ else {
 
 // Python environment
 const py = fs.existsSync(PY) ? run(PY, ["-I", "-c", "import kokoro_onnx, soundfile, numpy, sys; print(sys.version.split()[0])"]) : null;
-add("Python voice/music engine", !!py && py.status === 0, py && py.status === 0 ? `Python ${py.stdout.trim()} at ${PY}` : `not ready (${PY})`, `Run the installer: ${INSTALL}`);
+add("Python voice/music engine", !!py && py.status === 0, py && py.status === 0 ? `Python ${py.stdout.trim()} at ${PY}` : `not ready (${PY})`, `Follow ${SETUP_DOC}, step 2`);
 
-// Voice model
-const want = { "kokoro-v1.0.onnx": 325532387, "voices-v1.0.bin": 28214398 };
-const bad = Object.entries(want).filter(([f, size]) => {
+// Voice model: size first (fast), then the fixed SHA-256 checksum.
+const want = {
+	"kokoro-v1.0.onnx": [325532387, "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5"],
+	"voices-v1.0.bin": [28214398, "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"],
+};
+const sha256 = (file) => {
+	const h = createHash("sha256");
+	const fd = fs.openSync(file, "r");
+	const buf = Buffer.alloc(1 << 22);
 	try {
-		return fs.statSync(path.join(MODELS, f)).size !== size;
+		for (let n; (n = fs.readSync(fd, buf, 0, buf.length, null)) > 0; ) h.update(buf.subarray(0, n));
+	} finally {
+		fs.closeSync(fd);
+	}
+	return h.digest("hex");
+};
+const bad = Object.entries(want).filter(([f, [size, hash]]) => {
+	const file = path.join(MODELS, f);
+	try {
+		return fs.statSync(file).size !== size || sha256(file) !== hash;
 	} catch {
 		return true;
 	}
 });
-add("Voice model (Kokoro-82M)", bad.length === 0, bad.length ? `missing or incomplete: ${bad.map(([f]) => f).join(", ")}` : MODELS, `Run the installer: ${INSTALL}`);
+add("Voice model (Kokoro-82M)", bad.length === 0, bad.length ? `missing or failed its checksum: ${bad.map(([f]) => f).join(", ")}` : `${MODELS} (checksums verified)`, `Follow ${SETUP_DOC}, step 3 (delete any file that failed first)`);
 
 // Display (Linux): recording falls back to headless without one; signing in needs one.
 if (OS === "linux") {

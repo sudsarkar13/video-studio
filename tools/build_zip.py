@@ -4,7 +4,7 @@
 
 The zip unpacks to a single `video-studio/` folder (the skill) that people drop into their Claude
 skills folder; README.md, THIRD_PARTY.md and LICENSE (if present) go inside it. node_modules,
-caches and OS litter are left out; install/install.mjs fetches dependencies into the data folder.
+caches and OS litter are left out; the setup steps in reference/setup.md fetch dependencies into the data folder.
 """
 
 import json

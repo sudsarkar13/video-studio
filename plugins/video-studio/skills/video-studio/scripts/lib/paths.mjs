@@ -21,10 +21,10 @@ export const PY = process.env.VIDEO_STUDIO_PY || (WIN ? path.join(HOME_DIR, ".ve
 export const PROFILE = path.join(HOME_DIR, "browser-profile");
 export const MODELS = path.join(HOME_DIR, "models");
 export const FFMPEG = process.env.VIDEO_STUDIO_FFMPEG || "ffmpeg";
-// playwright-core lives in the data folder (installed by install/install.mjs), not in the plugin.
+// playwright-core lives in the data folder (set up by following reference/setup.md), not in the plugin.
 export const NODE_DIR = path.join(HOME_DIR, "node");
 export const SKILL_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
-export const INSTALL_CMD = `node "${path.join(SKILL_DIR, "install", "install.mjs")}"`;
+export const SETUP_DOC = path.join(SKILL_DIR, "reference", "setup.md");
 
 /** Load playwright-core from the data folder; fall back to normal resolution (for development). */
 export const loadPlaywright = () => {
@@ -33,7 +33,7 @@ export const loadPlaywright = () => {
 			return createRequire(base)("playwright-core");
 		} catch {}
 	}
-	throw new Error(`playwright-core is not installed. Run the installer: ${INSTALL_CMD}`);
+	throw new Error(`playwright-core is not installed. Follow ${SETUP_DOC}, step 1.`);
 };
 
 const exists = (p) => {
@@ -67,7 +67,7 @@ export const browser = () => {
 	if (want && want !== "chrome" && want !== "msedge" && want !== "bundled") return { name: want, launch: { executablePath: want } };
 	if (want === "bundled") return { name: "bundled Chromium", launch: {} };
 	for (const ch of want ? [want] : ["chrome", "msedge"]) if (CANDIDATES[ch].some(exists)) return { name: ch === "chrome" ? "Google Chrome" : "Microsoft Edge", launch: { channel: ch } };
-	return { name: "bundled Chromium", launch: {} }; // the installer downloads it when no Chrome or Edge is found
+	return { name: "bundled Chromium", launch: {} }; // set up by reference/setup.md, step 4, when no Chrome or Edge is found
 };
 
 export const browserCandidates = CANDIDATES;

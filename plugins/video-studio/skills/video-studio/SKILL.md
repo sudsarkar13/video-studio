@@ -15,11 +15,11 @@ intake ─► new.mjs (storyboard) ─► tts.py narrate ─► capture.mjs reco
 
 Everything is open source or generated: Kokoro-82M (Apache-2.0) voices, music and effects composed by code (no licence attached), Playwright driving Chrome/Edge (or a bundled Chromium), and ffmpeg. Works on macOS, Linux and Windows. Nothing is tied to one product: brand, pages, words and steps all live in the storyboard.
 
-`S` below is this skill's `scripts` folder; `PY` is the Python the installer made (the doctor prints it).
+`S` below is this skill's `scripts` folder; `PY` is the Python in the data folder's `.venv` (the doctor prints it).
 
 ## 1. Check the install
 
-Run `node $S/doctor.mjs`. If it is not ready, run the installer, `node <skill folder>/install/install.mjs` (the same command on macOS, Linux and Windows; the doctor prints the exact path), then run the doctor again. The installer only writes to the data folder, never to the skill folder. Ask the person before installing anything system-wide (ffmpeg, a browser, Node, Python); the doctor prints the exact command for their OS.
+Run `node $S/doctor.mjs`. If it is not ready, read [reference/setup.md](reference/setup.md) and run its commands for the steps the doctor reports, one at a time, so the person sees each one. There is no installer script. Use only the pinned versions and checksums listed there, and write only to the data folder, never the skill folder. Ask the person before installing anything system-wide (ffmpeg, a browser, Node, Python); the doctor prints the exact command for their OS. Run the doctor again at the end.
 
 ## 2. Intake: what video do they want?
 

@@ -42,7 +42,7 @@ body:
     attributes:
       label: What worked?
       options:
-        - label: Installer finished without errors
+        - label: Setup steps (reference/setup.md) finished without errors
         - label: Voice samples (tts.py samples)
         - label: Card or slideshow video (no recording)
         - label: Recording a website (capture.mjs record)
